@@ -1,3 +1,6 @@
+//
+// Copyright (c) 2022 Wind River Systems, Inc.
+// 
 // Copyright (C) 2014-2017 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -53,7 +56,10 @@ typedef std::uint32_t pending_remote_offer_id_t;
 
 typedef std::uint32_t pending_security_update_id_t;
 
-#ifdef _WIN32
+// This is to define vsomeip::uid_t and vsomeip::gid_t.
+// Don't impact the global uid_t and gid_t type which is
+// defined in the OS header file.
+#if defined(_WIN32) || defined(VXWORKS)  
     typedef std::uint32_t uid_t;
     typedef std::uint32_t gid_t;
 #else

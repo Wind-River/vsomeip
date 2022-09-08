@@ -1,3 +1,6 @@
+//
+// Copyright (c) 2022 Wind River Systems, Inc.
+//
 // Copyright (C) 2014-2017 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -128,7 +131,7 @@ void routing_manager_stub::stop() {
         std::stringstream its_endpoint_path;
         its_endpoint_path << utility::get_base_path(configuration_) << std::hex
                 << VSOMEIP_ROUTING_CLIENT;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(VXWORKS)
         ::_unlink(its_endpoint_path.str().c_str());
 #else
         if (-1 == ::unlink(its_endpoint_path.str().c_str())) {
@@ -144,7 +147,7 @@ void routing_manager_stub::stop() {
         std::stringstream its_local_receiver_path;
         its_local_receiver_path << utility::get_base_path(configuration_)
                 << std::hex << host_->get_client();
-#ifdef _WIN32
+#if defined(_WIN32) || defined(VXWORKS)
         ::_unlink(its_local_receiver_path.str().c_str());
 #else
         if (-1 == ::unlink(its_local_receiver_path.str().c_str())) {
@@ -834,7 +837,7 @@ void routing_manager_stub::on_deregister_application(client_t _client) {
 }
 
 void routing_manager_stub::client_registration_func(void) {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
     {
         std::stringstream s;
         s << std::hex << std::setw(4) << std::setfill('0')
@@ -1613,7 +1616,7 @@ void routing_manager_stub::create_local_receiver() {
     if (local_receiver_) {
         return;
     }
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
     else if (!security::get()->check_credentials(get_client(), getuid(), getgid())) {
         VSOMEIP_ERROR << "vSomeIP Security: Client 0x" << std::hex << get_client()
                 << " : routing_manager_stub::create_local_receiver:  isn't allowed"

@@ -53,7 +53,10 @@ typedef std::uint32_t pending_remote_offer_id_t;
 
 typedef std::uint32_t pending_security_update_id_t;
 
-#ifdef _WIN32
+// This is to define vsomeip::uid_t and vsomeip::gid_t.
+// Don't impact the global uid_t and gid_t type which is
+// defined in the OS header file.
+#if defined(_WIN32) || defined(VXWORKS)  
     typedef std::uint32_t uid_t;
     typedef std::uint32_t gid_t;
 #else

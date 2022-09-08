@@ -1,3 +1,6 @@
+//
+// Copyright (c) 2022 Wind River Systems, Inc.
+//
 // Copyright (C) 2014-2018 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -364,7 +367,7 @@ bool routing_manager_impl::offer_service(client_t _client,
     // Check if the application hosted by routing manager is allowed to offer
     // offer_service requests of local proxies are checked in rms::on:message
     if (_client == get_client()) {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(VXWORKS)
         std::uint32_t its_routing_uid = ANY_UID;
         std::uint32_t its_routing_gid = ANY_GID;
 #else
@@ -1977,6 +1980,8 @@ std::shared_ptr<eventgroupinfo> routing_manager_impl::find_eventgroup(
     return routing_manager_base::find_eventgroup(_service, _instance, _eventgroup);
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreinterpret-base-class"
 std::shared_ptr<endpoint> routing_manager_impl::create_service_discovery_endpoint(
         const std::string &_address, uint16_t _port, bool _reliable) {
     std::shared_ptr<endpoint> its_service_endpoint =
@@ -2015,6 +2020,7 @@ std::shared_ptr<endpoint> routing_manager_impl::create_service_discovery_endpoin
     }
     return its_service_endpoint;
 }
+#pragma GCC diagnostic pop
 
 services_t routing_manager_impl::get_offered_services() const {
     services_t its_services;

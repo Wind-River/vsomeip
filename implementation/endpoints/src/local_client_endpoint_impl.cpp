@@ -1,3 +1,6 @@
+//
+// Copyright (c) 2022 Wind River Systems, Inc.
+// 
 // Copyright (C) 2014-2017 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,7 +21,7 @@
 #include "../../security/include/security.hpp"
 
 // Credentials
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
 #include "../include/credentials.hpp"
 #endif
 
@@ -126,7 +129,7 @@ void local_client_endpoint_impl::connect() {
             socket_->connect(remote_, its_connect_error);
 
 // Credentials
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
             if (!its_connect_error) {
                 auto its_host = endpoint_host_.lock();
                 if (its_host) {
@@ -318,7 +321,7 @@ void local_client_endpoint_impl::set_local_port() {
 }
 
 void local_client_endpoint_impl::print_status() {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
     std::string its_path = remote_.path();
 #else
     std::string its_path("");
@@ -336,7 +339,7 @@ void local_client_endpoint_impl::print_status() {
 }
 
 std::string local_client_endpoint_impl::get_remote_information() const {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(VXWORKS)
     boost::system::error_code ec;
     return remote_.address().to_string(ec) + ":"
             + std::to_string(remote_.port());

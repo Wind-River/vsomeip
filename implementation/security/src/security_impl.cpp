@@ -1,3 +1,6 @@
+//
+// Copyright (c) 2022 Wind River Systems, Inc.
+//
 // Copyright (C) 2019 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -650,7 +653,7 @@ security_impl::parse_policy(const byte_t* &_buffer, uint32_t &_buffer_size,
 ///////////////////////////////////////////////////////////////////////////////
 void
 security_impl::load_policies(const configuration_element &_element) {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(VXWORKS)
         return;
 #endif
     try {
@@ -973,7 +976,7 @@ security_impl::load_routing_credentials(const configuration_element &_element) {
 
 void
 security_impl::load_security_update_whitelist(const configuration_element &_element) {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(VXWORKS)
         return;
 #endif
     try {
@@ -1165,7 +1168,7 @@ static std::mutex the_security_mutex__;
 
 std::shared_ptr<security_impl>
 security_impl::get() {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
     std::lock_guard<std::mutex> its_lock(the_security_mutex__);
 #endif
     if(the_security_ptr__ == nullptr) {
@@ -1180,7 +1183,7 @@ security_impl::get() {
     return (nullptr);
 }
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
 static void security_teardown(void) __attribute__((destructor));
 static void security_teardown(void)
 {

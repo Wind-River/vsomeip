@@ -1,3 +1,6 @@
+#
+# Copyright (c) 2022 Wind River Systems, Inc.
+#
 # Copyright (C) 2015-2017 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,7 +19,7 @@ set (VSOMEIP_HOTFIX_VERSION 3)
 
 set (VSOMEIP_VERSION ${VSOMEIP_MAJOR_VERSION}.${VSOMEIP_MINOR_VERSION}.${VSOMEIP_PATCH_VERSION})
 set (PACKAGE_VERSION ${VSOMEIP_VERSION}) # Used in documentation/doxygen.in
-set (CMAKE_VERBOSE_MAKEFILE off)
+set (CMAKE_VERBOSE_MAKEFILE on)
 
 if (NOT GTEST_ROOT)
     if (DEFINED ENV{GTEST_ROOT})
@@ -52,7 +55,8 @@ if(NOT CMAKE_BUILD_TYPE)
   # Set the possible values of build type for cmake-gui
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
-
+MESSAGE( STATUS "vsomeip CMAKE_BUILD_TYPE value is:  ${CMAKE_BUILD_TYPE}" )
+  
 # OS
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     set(OS "LINUX")
@@ -82,6 +86,18 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
     set(OPTIMIZE "")
     set(OS_CXX_FLAGS "-pthread")
 endif (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
+
+# add VxWorks support
+
+MESSAGE( STATUS "CMAKE_SYSTEM_NAME value is:  ${CMAKE_SYSTEM_NAME}" )
+if (${CMAKE_SYSTEM_NAME} MATCHES "VxWorks")
+    set(OS "VXWORKS")
+    set(DL_LIBRARY "")
+    set(EXPORTSYMBOLS "-Wl,-export-dynamic")
+    set(NO_DEPRECATED "-Wno-deprecated")
+    set(OPTIMIZE "")
+    set(OS_CXX_FLAGS "")
+endif (${CMAKE_SYSTEM_NAME} MATCHES "VxWorks")
 
 ################################################################################
 # Options
@@ -164,8 +180,10 @@ else()
 endif()
 
 message( STATUS "Using boost version: ${VSOMEIP_BOOST_VERSION}" )
-if (${VSOMEIP_BOOST_VERSION} GREATER 107400)
-message( ERROR "boost version ${VSOMEIP_BOOST_VERSION} is not (yet) supported. Latest supported version is 1.74.0" )
+if (${VSOMEIP_BOOST_VERSION} GREATER 107500)
+message( ERROR "boost version ${VSOMEIP_BOOST_VERSION} is not (yet) supported. Latest supported version is 1.75.0" )
+elseif(${VSOMEIP_BOOST_VERSION} GREATER 107400)
+set(VSOMEIP_BOOST_HELPER implementation/helper/1.75)
 elseif(${VSOMEIP_BOOST_VERSION} GREATER 107300)
 set(VSOMEIP_BOOST_HELPER implementation/helper/1.74)
 elseif(${VSOMEIP_BOOST_VERSION} GREATER 106999)
@@ -235,7 +253,7 @@ if (MSVC)
     ADD_DEFINITIONS( -DBOOST_ALL_DYN_LINK )
 else()
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${OS} ${OS_CXX_FLAGS} -g ${OPTIMIZE} -std=c++11 ${NO_DEPRECATED} ${EXPORTSYMBOLS}")
-    if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Android")
+    if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Android" AND NOT ${CMAKE_SYSTEM_NAME} MATCHES "VxWorks")
         set(USE_RT "rt")
     endif()
 endif()
@@ -586,7 +604,7 @@ endif()
 ##############################################################################
 if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Android")
     # build routing manager daemon (Non-Windows only)
-    if (NOT MSVC)
+    if (NOT MSVC AND NOT ${CMAKE_SYSTEM_NAME} MATCHES "VxWorks")
     add_subdirectory( examples/routingmanagerd )
     endif()
 

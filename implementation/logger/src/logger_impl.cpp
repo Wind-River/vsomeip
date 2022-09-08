@@ -1,3 +1,6 @@
+//
+// Copyright (c) 2022 Wind River Systems, Inc.
+// 
 // Copyright (C) 2020 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -102,7 +105,11 @@ static void logger_impl_teardown(void) __attribute__((destructor));
 static void logger_impl_teardown(void)
 {
     if (the_logger_ptr__ != nullptr) {
+// When the application terminates this mutex is already destroyed
+// so VxWorks triggers an exception
+#ifndef VXWORKS
         std::lock_guard<std::mutex> its_lock(the_logger_mutex__);
+#endif
         the_logger_ptr__->reset();
         delete the_logger_ptr__;
         the_logger_ptr__ = nullptr;

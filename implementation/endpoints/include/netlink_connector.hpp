@@ -1,3 +1,6 @@
+//
+// Copyright (c) 2022 Wind River Systems, Inc.
+// 
 // Copyright (C) 2014-2017 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,8 +12,12 @@
 #ifndef _WIN32
 
 #include <sys/socket.h>
+#ifdef VXWORKS
+#include <net/netlink.h>
+#else
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
+#endif
 
 #include <map>
 #include <mutex>
@@ -174,6 +181,24 @@ private:
 
     std::mutex socket_mutex_;
     boost::asio::basic_raw_socket<nl_protocol> socket_;
+
+    typedef struct {
+        struct nlmsghdr nlhdr;
+        struct ifaddrmsg addrmsg;
+    } netlink_address_msg;
+    netlink_address_msg get_address_msg;
+
+    typedef struct {
+        struct nlmsghdr nlhdr;
+        struct ifinfomsg infomsg;
+    } netlink_link_msg;
+    netlink_link_msg get_link_msg;
+
+    typedef struct {
+        struct nlmsghdr nlhdr;
+        struct rtgenmsg routemsg;
+    } netlink_route_msg;
+    netlink_route_msg get_route_msg;
 
     const size_t recv_buffer_size = 16384;
     message_buffer_t recv_buffer_;

@@ -1,3 +1,6 @@
+//
+// Copyright (c) 2022 Wind River Systems, Inc.
+// 
 // Copyright (C) 2014-2017 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -242,11 +245,6 @@ void netlink_connector::send_cbk(boost::system::error_code const &_error, std::s
 }
 
 void netlink_connector::send_ifa_request() {
-    typedef struct {
-        struct nlmsghdr nlhdr;
-        struct ifaddrmsg addrmsg;
-    } netlink_address_msg;
-    netlink_address_msg get_address_msg;
     memset(&get_address_msg, 0, sizeof(get_address_msg));
     get_address_msg.nlhdr.nlmsg_len = NLMSG_LENGTH(sizeof(struct ifaddrmsg));
     get_address_msg.nlhdr.nlmsg_flags = NLM_F_REQUEST | NLM_F_ROOT;
@@ -270,11 +268,6 @@ void netlink_connector::send_ifa_request() {
 }
 
 void netlink_connector::send_ifi_request() {
-    typedef struct {
-        struct nlmsghdr nlhdr;
-        struct ifinfomsg infomsg;
-    } netlink_link_msg;
-    netlink_link_msg get_link_msg;
     memset(&get_link_msg, 0, sizeof(get_link_msg));
     get_link_msg.nlhdr.nlmsg_len = NLMSG_LENGTH(sizeof(struct ifinfomsg));
     get_link_msg.nlhdr.nlmsg_flags = NLM_F_REQUEST | NLM_F_ROOT;
@@ -297,12 +290,6 @@ void netlink_connector::send_ifi_request() {
 }
 
 void netlink_connector::send_rt_request() {
-    typedef struct {
-        struct nlmsghdr nlhdr;
-        struct rtgenmsg routemsg;
-    } netlink_route_msg;
-
-    netlink_route_msg get_route_msg;
     memset(&get_route_msg, 0, sizeof(get_route_msg));
     get_route_msg.nlhdr.nlmsg_len = NLMSG_LENGTH(sizeof(struct rtgenmsg));
     get_route_msg.nlhdr.nlmsg_flags = NLM_F_REQUEST | NLM_F_DUMP;
@@ -335,7 +322,12 @@ bool netlink_connector::has_address(struct ifaddrmsg * ifa_struct,
     struct rtattr *retrta;
     retrta = static_cast<struct rtattr *>(IFA_RTA(ifa_struct));
     while RTA_OK(retrta, length) {
-        if (retrta->rta_type == IFA_ADDRESS) {
+// VxWorks NETLINK implementation reports interface address with IFA_LOCAL type
+        if (retrta->rta_type == IFA_ADDRESS
+#ifdef VXWORKS
+            || retrta->rta_type == IFA_LOCAL
+#endif
+           ) {
             char pradd[128];
             unsigned int * tmp_address = (unsigned int *)RTA_DATA(retrta);
             if (address_.is_v4()) {
@@ -395,7 +387,11 @@ bool netlink_connector::check_sd_multicast_route_match(struct rtmsg* _routemsg,
 
                 for (int i = 0; i < 4; i++) {
 #ifndef ANDROID
+ #ifdef VXWORKS
+                    const std::uint32_t dst = ntohl((*(struct in6_addr*)RTA_DATA(retrta)).in6.addr32[i]);
+ #else
                     const std::uint32_t dst = ntohl((*(struct in6_addr*)RTA_DATA(retrta)).__in6_u.__u6_addr32[i]);
+ #endif
 #else
                     const std::uint32_t dst = ntohl((*(struct in6_addr*)RTA_DATA(retrta)).in6_u.u6_addr32[i]);
 #endif

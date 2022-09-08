@@ -1,3 +1,6 @@
+//
+// Copyright (c) 2022 Wind River Systems, Inc.
+// 
 // Copyright (C) 2014-2018 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -119,8 +122,14 @@ service_discovery_impl::init() {
     std::mt19937 e(r());
     std::uniform_int_distribution<std::uint32_t> distribution(
             initial_delay_min, initial_delay_max);
+#ifndef VXWORKS
+//FIXME. Crash seen here on VxWorks in the default build
+// Crash is not seen in debug build!
+// As workaround, just use the max initial delay
     initial_delay_ = std::chrono::milliseconds(distribution(e));
-
+#else
+    initial_delay_ = std::chrono::milliseconds(initial_delay_max);
+#endif
 
     repetitions_base_delay_ = std::chrono::milliseconds(
             configuration_->get_sd_repetitions_base_delay());
@@ -137,6 +146,8 @@ service_discovery_impl::init() {
             + (cyclic_offer_delay_ / 10);
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreinterpret-base-class"
 void
 service_discovery_impl::start() {
     if (!endpoint_) {
@@ -181,6 +192,7 @@ service_discovery_impl::start() {
     start_find_debounce_timer(true);
     start_ttl_timer();
 }
+#pragma GCC diagnostic pop
 
 void
 service_discovery_impl::stop() {
@@ -3341,6 +3353,8 @@ service_discovery_impl::get_ttl_factor(
     return its_ttl_factor;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreinterpret-base-class"
 void
 service_discovery_impl::on_last_msg_received_timer_expired(
         const boost::system::error_code &_error) {
@@ -3370,6 +3384,7 @@ service_discovery_impl::on_last_msg_received_timer_expired(
         }
     }
 }
+#pragma GCC diagnostic pop
 
 void
 service_discovery_impl::stop_last_msg_received_timer() {

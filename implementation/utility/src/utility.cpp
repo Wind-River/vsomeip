@@ -1,3 +1,6 @@
+//
+// Copyright (c) 2022 Wind River Systems, Inc.
+//
 // Copyright (C) 2014-2017 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -309,6 +312,9 @@ void utility::reset_client_ids() {
 std::uint16_t utility::get_max_client_number(
         const std::shared_ptr<configuration> &_config) {
     std::uint16_t its_max_clients(0);
+#ifndef VXWORKS
+// FIXME. __builtin_popcount does not seem to work for VxWorks
+// As workaround, manually calculate bits_for_clients
     const int bits_for_clients =
 #ifdef _WIN32
             __popcnt(
@@ -316,6 +322,17 @@ std::uint16_t utility::get_max_client_number(
             __builtin_popcount(
 #endif
                     static_cast<std::uint16_t>(~_config->get_diagnosis_mask()));
+#else
+    int bits_for_clients = 0;
+    std::uint16_t diagnosis_mask_compl =
+                    static_cast<std::uint16_t>(~_config->get_diagnosis_mask());
+
+    while (diagnosis_mask_compl) {
+        bits_for_clients += diagnosis_mask_compl & 1;
+        diagnosis_mask_compl >>= 1;
+    }
+#endif
+
     for (int var = 0; var < bits_for_clients; ++var) {
         its_max_clients = static_cast<std::uint16_t>(its_max_clients | (1 << var));
     }

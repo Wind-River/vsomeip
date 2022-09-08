@@ -1,3 +1,6 @@
+//
+// Copyright (c) 2022 Wind River Systems, Inc.
+// 
 // Copyright (C) 2014-2018 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -74,7 +77,7 @@ application_impl::application_impl(const std::string &_name)
 {
     own_uid_ = ANY_UID;
     own_gid_ = ANY_GID;
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
     own_uid_ = getuid();
     own_gid_ = getgid();
 #endif
@@ -343,7 +346,7 @@ bool application_impl::init() {
 }
 
 void application_impl::start() {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
     if (getpid() != static_cast<pid_t>(syscall(SYS_gettid))) {
         // only set threadname if calling thread isn't the main thread
         std::stringstream s;
@@ -411,11 +414,11 @@ void application_impl::start() {
                             << std::hex << std::setw(4) << std::setfill('0')
                             << client_ << " (" << name_ << ") is: " << std::hex
                             << std::this_thread::get_id()
-                    #ifndef _WIN32
+                    #if !defined(_WIN32) && !defined(VXWORKS)
                             << " TID: " << std::dec << static_cast<int>(syscall(SYS_gettid))
                     #endif
                             ;
-                    #ifndef _WIN32
+                    #if !defined(_WIN32) && !defined(VXWORKS)
                         {
                             std::stringstream s;
                             s << std::hex << std::setw(4) << std::setfill('0')
@@ -458,11 +461,11 @@ void application_impl::start() {
     VSOMEIP_INFO << "io thread id from application: "
             << std::hex << std::setw(4) << std::setfill('0') << client_ << " ("
             << name_ << ") is: " << std::hex << std::this_thread::get_id()
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
             << " TID: " << std::dec << static_cast<int>(syscall(SYS_gettid))
 #endif
     ;
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
     if ((VSOMEIP_IO_THREAD_NICE_LEVEL != io_thread_nice_level) && (io_thread_nice_level != nice(io_thread_nice_level))) {
         VSOMEIP_WARNING << "nice(" << io_thread_nice_level << ") failed " << errno << " for " << std::this_thread::get_id();
     }
@@ -1569,7 +1572,7 @@ routing_manager * application_impl::get_routing_manager() const {
 }
 
 void application_impl::main_dispatch() {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
     {
         std::stringstream s;
         s << std::hex << std::setw(4) << std::setfill('0')
@@ -1581,7 +1584,7 @@ void application_impl::main_dispatch() {
     VSOMEIP_INFO << "main dispatch thread id from application: "
             << std::hex << std::setw(4) << std::setfill('0') << client_ << " ("
             << name_ << ") is: " << std::hex << its_id
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
             << " TID: " << std::dec << static_cast<int>(syscall(SYS_gettid))
 #endif
             ;
@@ -1622,7 +1625,7 @@ void application_impl::main_dispatch() {
 }
 
 void application_impl::dispatch() {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
     {
         std::stringstream s;
         s << std::hex << std::setw(4) << std::setfill('0')
@@ -1634,7 +1637,7 @@ void application_impl::dispatch() {
     VSOMEIP_INFO << "dispatch thread id from application: "
             << std::hex << std::setw(4) << std::setfill('0') << client_ << " ("
             << name_ << ") is: " << std::hex << its_id
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
             << " TID: " << std::dec << static_cast<int>(syscall(SYS_gettid))
 #endif
             ;
@@ -1917,11 +1920,11 @@ void application_impl::shutdown() {
     VSOMEIP_INFO << "shutdown thread id from application: "
             << std::hex << std::setw(4) << std::setfill('0') << client_ << " ("
             << name_ << ") is: " << std::hex << std::this_thread::get_id()
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
             << " TID: " << std::dec << static_cast<int>(syscall(SYS_gettid))
 #endif
     ;
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
     boost::asio::detail::posix_signal_blocker blocker;
     {
         std::stringstream s;

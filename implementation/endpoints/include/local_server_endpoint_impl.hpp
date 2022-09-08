@@ -1,3 +1,6 @@
+//
+// Copyright (c) 2022 Wind River Systems, Inc.
+//
 // Copyright (C) 2014-2017 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,7 +18,7 @@
 #include <boost/asio/local/stream_protocol_ext.hpp>
 
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(VXWORKS)
 #include <boost/asio/ip/tcp.hpp>
 #endif
 
@@ -26,7 +29,7 @@
 
 namespace vsomeip_v3 {
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(VXWORKS)
 typedef server_endpoint_impl<
             boost::asio::ip::tcp
         > local_server_endpoint_base_impl;
@@ -107,7 +110,7 @@ private:
 
         void set_bound_client(client_t _client);
         client_t get_bound_client() const;
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
         void set_bound_uid_gid(uid_t _uid, gid_t _gid);
 #endif
 
@@ -124,7 +127,7 @@ private:
                 boost::system::error_code const &_error, std::size_t _bytes);
         void receive_cbk(boost::system::error_code const &_error,
                          std::size_t _bytes
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
                          , std::uint32_t const &_uid, std::uint32_t const &_gid
 #endif
         );
@@ -147,7 +150,7 @@ private:
         const std::uint32_t buffer_shrink_threshold_;
 
         client_t bound_client_;
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(VXWORKS)
         uid_t bound_uid_;
         gid_t bound_gid_;
 #endif
@@ -155,7 +158,7 @@ private:
     };
 
     std::mutex acceptor_mutex_;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(VXWORKS)
     boost::asio::ip::tcp::acceptor acceptor_;
 #else
     boost::asio::local::stream_protocol_ext::acceptor acceptor_;

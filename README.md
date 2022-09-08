@@ -1,118 +1,62 @@
-### vsomeip
+VxWorks® 7 Layer for VSOMEIP
+===
+---
 
-##### Copyright
-Copyright (C) 2015-2017, Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+# Overview
 
-##### License
+The VxWorks 7 Layer for VSOMEIP provides the makefiles for building the
+[vsomeip](https://github.com/COVESA/vsomeip) 3.1.20.3 release on VxWorks.
 
-This Source Code Form is subject to the terms of the Mozilla Public
-License, v. 2.0. If a copy of the MPL was not distributed with this
-file, You can obtain one at http://mozilla.org/MPL/2.0/.
+This layer is an adapter to make standard SOME/IP build and run on
+VxWorks. This layer does not contain the vsomeip source, it only
+contains all functions required to allow vsomeip to build and execute
+on top of VxWorks. Use this layer to add the vsomeip library to your 
+user space, and to build the vsomeip example applications as RTPs.
 
-##### vsomeip Overview
-----------------
-The vsomeip stack implements the http://some-ip.com/ (Scalable service-Oriented
-MiddlewarE over IP (SOME/IP)) protocol. The stack consists out of:
+NOTE: The VxWorks 7 Layer for VSOMEIP is part of  VxWorks® Automotive product. If you need help, 
+use the resources available or contact your Wind River sales representative 
+to arrange for consulting services.
 
-* a shared library for SOME/IP (`libvsomeip3.so`)
-* a second shared library for SOME/IP's service discovery (`libvsomeip3-sd.so`)
-  which is loaded during runtime if the service discovery is enabled.
+# Project License
 
-##### Build Instructions for Linux
+The source code for this project is provided under the Mozilla Public License, v. 2.0. license. 
+Text for the vsomeip dependencies and other applicable license notices can be found in 
+the License_Notices.txt file in the project top level directory. Different 
+files may be under different licenses. Each source file should include a 
+license notice that designates the licensing terms for the respective file.
 
-###### Dependencies
+# Prerequisite(s)
 
-- A C++11 enabled compiler like gcc >= 4.8 is needed.
-- vsomeip uses CMake as buildsystem.
-- vsomeip uses Boost >= 1.55:
+* Install the Wind River® VxWorks® 7 operating system version 22.09 or later.
 
-Ubuntu 14.04:
+* The build system will need to download [vsomeip](https://github.com/COVESA/vsomeip) source code from github.com.  A
+  working Internet connection with access to both sites is required.
 
-`sudo apt-get install libboost-system1.55-dev libboost-thread1.55-dev libboost-log1.55-dev`
+* Install the git tool and ensure it operates from the command line.
 
-Ubuntu 12.04: a PPA is necessary to use version 1.54 of Boost:
--- URL: https://launchpad.net/~boost-latest/+archive/ubuntu/ppa
---`sudo add-apt-repository ppa:boost-latest/ppa`
---`sudo apt-get install libboost-system1.55-dev libboost-thread1.55-dev
-    libboost-log1.55-dev`
+### Setup
 
-For the tests Google's test framework https://code.google.com/p/googletest/[gtest] in version 1.7.0 is needed.
--- URL: https://googletest.googlecode.com/files/gtest-1.7.0.zip
+1. Download the **VxWorks 7 layer for VSOMEIP* from the following location:
 
-To build the documentation asciidoc, source-highlight, doxygen and graphviz is needed:
---`sudo apt-get install asciidoc source-highlight doxygen graphviz`
+https://github.com/Wind-River/vsomeip
 
-###### Compilation
+2. Set WIND_LAYER_PATHS to point to the vxworks7-layer-for-VSOMEIP directory. Command-line users may set this directly using export on Linux or set on Windows. Developers working on a Microsoft Windows host may also set the system environment variables. On Microsoft Windows 10, these can be found in the Control Panel under View advanced system Settings. Click the "Advanced" tab to find the "Environment Variables" button. From here you may set WIND_LAYER_PATHS to point to the vxworks7-layers-for-VSOMEIP. Please refer to the VxWorks documentation for details on the WIND_LAYER_PATHS variable.  
 
-For compilation call:
+3. Confirm the layer is present in your VxWorks 7 installation. In a VxWorks development shell, you may run "vxprj vsb listAll" and look for VSOMEIP_3_1_20_3 to confirm that the layer has been found.
 
-```bash
-mkdir build
-cd build
-cmake ..
-make
-```
+# Legal Notices
 
-To specify a installation directory (like `--prefix=` if you're used to autotools) call cmake like:
-```bash
-cmake -DCMAKE_INSTALL_PREFIX:PATH=$YOUR_PATH ..
-make
-make install
-```
+All product names, logos, and brands are property of their respective owners. All company, 
+product and service names used in this software are for identification purposes only. 
+Wind River and VxWorks are registered trademarks of Wind River Systems, Inc.
 
-###### Compilation with predefined unicast and/or diagnosis address
-To predefine the unicast address, call cmake like:
-```bash
-cmake -DUNICAST_ADDRESS=<YOUR IP ADDRESS> ..
-```
-
-To predefine the diagnosis address, call cmake like:
-```bash
-cmake -DDIAGNOSIS_ADDRESS=<YOUR DIAGNOSIS ADDRESS> ..
-```
-The diagnosis address is a single byte value.
-
-###### Compilation with custom default configuration folder
-To change the default configuration folder, call cmake like:
-```bash
-cmake -DDEFAULT_CONFIGURATION_FOLDER=<DEFAULT CONFIGURATION FOLDER> ..
-```
-The default configuration folder is /etc/vsomeip.
-
-###### Compilation with custom default configuration file
-To change the default configuration file, call cmake like:
-```bash
-cmake -DDEFAULT_CONFIGURATION_FILE=<DEFAULT CONFIGURATION FILE> ..
-```
-The default configuration file is /etc/vsomeip.json.
-
-###### Compilation with signal handling
-
-To compile vsomeip with signal handling (SIGINT/SIGTERM) enabled, call cmake like:
-```bash
-cmake -DENABLE_SIGNAL_HANDLING=1 ..
-```
-In the default setting, the application has to take care of shutting down vsomeip in case these signals are received.
-
-
-##### Build Instructions for Android
-
-###### Dependencies
-
-- vsomeip uses Boost >= 1.55. The boost libraries (system, thread and log) must be included in the Android source tree and integrated into the build process with an appropriate Android.bp file.
-
-###### Compilation
-
-In general for building the Android source tree the instructions found on the pages from the Android Open Source Project (AOSP) apply (https://source.android.com/setup/build/requirements).
-
-To integrate the vsomeip library into the build process, the source code together with the Android.bp file has to be inserted into the Android source tree (by simply copying or by fetching with a custom platform manifest).
-When building the Android source tree, the Android.bp file is automatically found and considered by the build system.
-
-In order that the vsomeip library is also included in the Android image, the library has to be added to the PRODUCT_PACKAGES variable in one of a device/target specific makefile:
-
-```
-PRODUCT_PACKAGES += \
-    libvsomeip \
-    libvsomeip_cfg \
-    libvsomeip_sd
-```
+Disclaimer of Warranty / No Support: Wind River does not provide support 
+and maintenance services for this software, under Wind River’s standard 
+Software Support and Maintenance Agreement or otherwise. Unless required 
+by applicable law, Wind River provides the software (and each contributor 
+provides its contribution) on an “AS IS” BASIS, WITHOUT WARRANTIES OF ANY 
+KIND, either express or implied, including, without limitation, any warranties 
+of TITLE, NONINFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR 
+PURPOSE. You are solely responsible for determining the appropriateness of 
+using or redistributing the software and assume any risks associated with 
+your exercise of permissions under the license.
