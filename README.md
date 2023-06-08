@@ -13,10 +13,6 @@ contains all functions required to allow vsomeip to build and execute
 on top of VxWorks. Use this layer to add the vsomeip library to your 
 user space, and to build the vsomeip example applications as RTPs.
 
-NOTE: The VxWorks 7 Layer for VSOMEIP is part of  VxWorks® Automotive product. If you need help, 
-use the resources available or contact your Wind River sales representative 
-to arrange for consulting services.
-
 # Project License
 
 The source code for this project is provided under the Mozilla Public License, v. 2.0. license. 
@@ -27,7 +23,7 @@ license notice that designates the licensing terms for the respective file.
 
 # Prerequisite(s)
 
-* Install the Wind River® VxWorks® 7 operating system version 22.09 or later.
+* Install the Wind River® VxWorks® 7 operating system version 23.09 or later.
 
 * The build system will need to download [vsomeip](https://github.com/COVESA/vsomeip) source code from github.com.  A
   working Internet connection with access to both sites is required.
