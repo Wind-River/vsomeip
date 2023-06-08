@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2022 Wind River Systems, Inc.
+# Copyright (c) 2022-2023 Wind River Systems, Inc.
 #
 # Copyright (C) 2015-2017 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 # This Source Code Form is subject to the terms of the Mozilla Public
@@ -48,7 +48,7 @@ set (INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE STRING "Installation direc
 
 ###################################################################################################
 # Set a default build type if none was specified
-set(default_build_type "RelWithDebInfo")
+set(default_build_type "Release")
 if(NOT CMAKE_BUILD_TYPE)
   message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
   set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
@@ -180,10 +180,12 @@ else()
 endif()
 
 message( STATUS "Using boost version: ${VSOMEIP_BOOST_VERSION}" )
-if (${VSOMEIP_BOOST_VERSION} GREATER 107500)
-message( ERROR "boost version ${VSOMEIP_BOOST_VERSION} is not (yet) supported. Latest supported version is 1.75.0" )
-elseif(${VSOMEIP_BOOST_VERSION} GREATER 107400)
-set(VSOMEIP_BOOST_HELPER implementation/helper/1.75)
+if (${VSOMEIP_BOOST_VERSION} GREATER 108100)
+message( ERROR "boost version ${VSOMEIP_BOOST_VERSION} is not (yet) supported. Latest supported version is 1.81.0" )
+elseif(${VSOMEIP_BOOST_VERSION} GREATER 107600)
+set(VSOMEIP_BOOST_HELPER implementation/helper/1.78)
+elseif(${VSOMEIP_BOOST_VERSION} GREATER 107500)
+set(VSOMEIP_BOOST_HELPER implementation/helper/1.76)
 elseif(${VSOMEIP_BOOST_VERSION} GREATER 107300)
 set(VSOMEIP_BOOST_HELPER implementation/helper/1.74)
 elseif(${VSOMEIP_BOOST_VERSION} GREATER 106999)
@@ -252,7 +254,7 @@ if (MSVC)
     link_directories(${Boost_LIBRARY_DIR_DEBUG})
     ADD_DEFINITIONS( -DBOOST_ALL_DYN_LINK )
 else()
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${OS} ${OS_CXX_FLAGS} -g ${OPTIMIZE} -std=c++11 ${NO_DEPRECATED} ${EXPORTSYMBOLS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${OS} ${OS_CXX_FLAGS} ${OPTIMIZE} -std=c++11 ${NO_DEPRECATED} ${EXPORTSYMBOLS}")
     if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Android" AND NOT ${CMAKE_SYSTEM_NAME} MATCHES "VxWorks")
         set(USE_RT "rt")
     endif()

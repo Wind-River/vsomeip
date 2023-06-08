@@ -1,7 +1,4 @@
 //
-// Copyright (c) 2022 Wind River Systems, Inc.
-// 
-//
 // detail/impl/socket_ops_ext_local.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
@@ -18,18 +15,6 @@
 #include <boost/asio/detail/impl/socket_ops.ipp>
 
 #include <boost/asio/detail/push_options.hpp>
-
-#ifdef VXWORKS
-// Macro and structures below are not used in VxWorks port
-// Only needed for compilation
-#ifndef SCM_CREDENTIALS
-#define SCM_CREDENTIALS 0
-#endif
-struct ucred {
-    std::uint32_t uid;
-    std::uint32_t gid;
-};
-#endif
 
 namespace boost {
 namespace asio {

@@ -1,0 +1,122 @@
+{
+   "unicast" : "10.10.0.10",
+   "logging" : 
+   {
+      "level" : "debug",
+      "console" : "true",
+      "file" : 
+      {
+         "enable" : "false",
+         "path" : "/tmp/vsomeip.log"
+      },
+      "dlt" : "false"
+   },
+   "applications" : 
+   [
+      {
+         "name" : "payload_test_service_1",
+         "id" : "0x1277"
+      },
+      {
+         "name" : "payload_test_service_2",
+         "id" : "0x1278"
+      }
+   ],
+   "services" : 
+   [
+      {
+         "service" : "0x1234",
+         "instance" : "0x5678",
+         "unreliable" : "30509",
+         "reliable" : 
+         {
+            "port" : "30509",
+            "enable-magic-cookies" : "false"
+         }
+      },
+      {
+         "service" : "0x1235",
+         "instance" : "0x5678",
+         "unreliable" : "30509",
+         "reliable" : 
+         {
+            "port" : "30509",
+            "enable-magic-cookies" : "false"
+         }
+      },
+      {
+         "service" : "0x1000",
+         "instance" : "0x1111",
+         "unreliable" : "30509",
+         "reliable" :
+         {
+            "port" : "30509",
+            "enable-magic-cookies" : "false"
+         }
+      },
+      {
+         "service" : "0x2000",
+         "instance" : "0x1111",
+         "unreliable" : "30509",
+         "reliable" :
+         {
+            "port" : "30509",
+            "enable-magic-cookies" : "false"
+         }
+      },
+      {
+         "service" : "0x3000",
+         "instance" : "0x2222",
+         "unreliable" : "30509",
+         "reliable" :
+         {
+            "port" : "30509",
+            "enable-magic-cookies" : "false"
+         }
+      },
+      {
+         "service" : "0x4000",
+         "instance" : "0x4444",
+         "unreliable" : "30509",
+         "reliable" :
+         {
+            "port" : "30509",
+            "enable-magic-cookies" : "false"
+         }
+      },
+      {
+         "service" : "0x5000",
+         "instance" : "0x5555",
+         "unreliable" : "30509",
+         "reliable" :
+         {
+            "port" : "30509",
+            "enable-magic-cookies" : "false"
+         }
+      },
+      {
+         "service" : "0x6000",
+         "instance" : "0x6666",
+         "unreliable" : "30509",
+         "reliable" :
+         {
+            "port" : "30509",
+            "enable-magic-cookies" : "false"
+         }
+      }
+    ],
+    "npdu-default-timings" : {
+        "debounce-time-request" : "0",
+        "debounce-time-response" : "0",
+        "max-retention-time-request" : "0",
+        "max-retention-time-response" : "0"
+    },
+    "routing" : "payload_test_service_1",
+   "service-discovery":
+    {
+        "enable":"true",
+        "multicast":"224.0.0.1",
+        "port":"30491",
+        "protocol":"udp"
+    }
+}
