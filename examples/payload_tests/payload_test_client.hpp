@@ -26,7 +26,6 @@
 #include "../../implementation/configuration/include/configuration_impl.hpp"
 #include "../../implementation/configuration/include/configuration_plugin.hpp"
 #include "../../implementation/security/include/security_impl.hpp"
-#include "stopwatch.hpp"
 
 class payload_test_client
 {

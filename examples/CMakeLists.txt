@@ -60,7 +60,7 @@ target_link_libraries(${TEST_SUBSCRIBE_NOTIFY_SERVICE}
 add_dependencies(examples request-sample response-sample subscribe-sample notify-sample payload_test_client payload_test_service subscribe_notify_test_service)
 
 install (
-    TARGETS request-sample response-sample subscribe-sample notify-sample payload_test_client subscribe_notify_test_service
+    TARGETS request-sample response-sample subscribe-sample notify-sample payload_test_client payload_test_service subscribe_notify_test_service
     RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
 )
 

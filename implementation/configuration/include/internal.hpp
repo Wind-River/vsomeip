@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2022 Wind River Systems, Inc.
+// Copyright (c) 2023 Wind River Systems, Inc.
 // 
 // Copyright (C) 2014-2019 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 // This Source Code Form is subject to the terms of the Mozilla Public
